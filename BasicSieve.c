@@ -12,7 +12,7 @@ unsigned long int cputime()
 	return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
 }
 
-//fonction qui genere un nombre de taille exactement k bits
+
 int nombre_k_bits(mpz_t n,int b, gmp_randstate_t mon_generateur){
 	mpz_t z_n;
 	mpz_inits(z_n,NULL);
@@ -26,12 +26,17 @@ int nombre_k_bits(mpz_t n,int b, gmp_randstate_t mon_generateur){
 
 int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, int primes[])
 {
-	//on genere un nombre de k bits et vérifie qu'il est impair
+	FILE* f;
+
+	f=fopen("traces.txt","a");
+	if(f==NULL){
+		printf("Erreur d'ouverture du fichier \n");
+	}
+
     do
     {
         nombre_k_bits(n, b, mon_generateur);
     } while (mpz_divisible_ui_p(n, 2) != 0);
-	
     int isPrime = 1;
     do
     {
@@ -48,14 +53,17 @@ int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, i
                 isPrime = 0;
                 mpz_add_ui(n, n, 2);
                 printf("G \n"); //G = q=q+2 et retour a la ligne 2
+                fputc('B',f);
                 break;
             }
             printf("I \n");//incrémentation
+            fputc('A',f);
         }
 
         if (isPrime)
         {
         	gmp_printf("T[%Zd} \n",n);
+        	fputc('C',f);
 			if(mpz_probab_prime_p(n,t)==0){
 				mpz_add_ui(n,n,2);
 			}
@@ -64,6 +72,8 @@ int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, i
 			}
         }
     } while (!isPrime);
+
+    fclose(f);
 
     return isPrime;
 }
@@ -76,6 +86,8 @@ int main(int argc, char * argv[])
 	mpz_t N;
 	mpz_inits(n,N,p,q,NULL);
 	seed = time(NULL);
+
+
 	//ce programme genere 2 nombres : p et q 
 	r=2;
 	//de taille exactement 512 bits chacun
@@ -84,7 +96,7 @@ int main(int argc, char * argv[])
 	//on aura trois cas à étudier (T1, k = 54), (T2, k = 60), (T3, k = 70)
 	k=atoi(argv[1]);
 	//avant d’etre testé par la méthode de Miller-Rabin avec t bases
-	t=atoi(argv[2]);
+	t=10;
 	
 
 	int primes[k];
@@ -117,5 +129,6 @@ int main(int argc, char * argv[])
 
 	gmp_randclear(mon_generateur);
     mpz_clears(n,N,p,q, NULL);
+    
 
 }

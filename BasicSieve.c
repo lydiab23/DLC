@@ -37,6 +37,7 @@ int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, i
     {
         nombre_k_bits(n, b, mon_generateur);
     } while (mpz_divisible_ui_p(n, 2) != 0);
+	//while(mpz_even_p (n)); peut être?
     int isPrime = 1;
     do
     {

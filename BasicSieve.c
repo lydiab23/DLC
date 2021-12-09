@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include<sys/types.h>
 #include<sys/resource.h>
+#include<unistd.h>
 
 unsigned long int cputime()
 {
@@ -24,20 +25,13 @@ int nombre_k_bits(mpz_t n,int b, gmp_randstate_t mon_generateur){
 }
 
 
-int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, int primes[])
+int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, int primes[], FILE* f)
 {
-	FILE* f;
-
-	f=fopen("traces.txt","a");
-	if(f==NULL){
-		printf("Erreur d'ouverture du fichier \n");
-	}
 
     do
     {
         nombre_k_bits(n, b, mon_generateur);
     } while (mpz_divisible_ui_p(n, 2) != 0);
-	//while(mpz_even_p (n)); peut être?
     int isPrime = 1;
     do
     {
@@ -74,7 +68,6 @@ int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, i
         }
     } while (!isPrime);
 
-    fclose(f);
 
     return isPrime;
 }
@@ -87,6 +80,10 @@ int main(int argc, char * argv[])
 	mpz_t N;
 	mpz_inits(n,N,p,q,NULL);
 	seed = time(NULL);
+
+	FILE* f;
+	FILE* g;
+
 
 
 	//ce programme genere 2 nombres : p et q 
@@ -116,14 +113,30 @@ int main(int argc, char * argv[])
 	
 	mpz_set_ui(N,1);
 	long int starttime = cputime();
-	for(j=0;j<r;j++){
-		rep=crible_simple(b,k,t,n,mon_generateur,primes);
-		if(rep==1){
-			gmp_printf("n%d = %Zd \n",j,n);
-			printf("\n");
-			mpz_mul(N,N,n);
-		}
+
+	f=fopen("traces_de_p.txt","a");
+	if(f==NULL){
+		printf("Erreur d'ouverture du fichier \n");
 	}
+	rep=crible_simple(b,k,t,p,mon_generateur,primes,f);
+	if(rep==1){
+		gmp_printf("p = %Zd \n",p);
+		printf("\n");
+	}
+	fclose(f);
+
+	g=fopen("traces_de_q.txt","a");
+	if(g==NULL){
+		printf("Erreur d'ouverture du fichier \n");
+	}
+	rep=crible_simple(b,k,t,q,mon_generateur,primes,g);
+	if(rep==1){
+		gmp_printf("q = %Zd \n",q);
+		printf("\n");
+	}
+
+
+	mpz_mul(N,p,q);
 	gmp_printf("N = %Zd \n",N);
 	long int endtime = cputime();
 	printf("temps d'execution : %ld milli-secondes \n", endtime - starttime);
@@ -131,5 +144,6 @@ int main(int argc, char * argv[])
 	gmp_randclear(mon_generateur);
     mpz_clears(n,N,p,q, NULL);
     
-
+    
+    fclose(g);
 }

@@ -108,6 +108,7 @@ for(int j=0;j<k;j++)
 int nz_p, nz_q;
 nz_p=count_non_zero(S_p,nz_p,size_p+1);
 nz_q=count_non_zero(S_q,nz_q,size_q +1);
+int S_p1[nz_p], S_q1[nz_q];
 cleaning(S_p,S_p1,nz_p,size_p+1);
 cleaning(S_q,S_q1,nz_q,size_q+1);
 }

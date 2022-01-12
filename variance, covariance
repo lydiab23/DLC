@@ -1,0 +1,39 @@
+#include <stdio.h>
+ 
+int sum(int X[], int size)
+{
+    int sum,i;
+    sum = 0;
+    /*  Compute the sum of all elements */
+    for (i = 0; i < size; i++)
+    {
+        sum = sum + X[i];
+    }
+    return sum;
+}
+
+int avg(int X[], int size)
+{
+    int average;
+    average = sum(X,size) / size;
+    return average;
+}
+
+void op(int X[], int Y[], int size, int x)
+{
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        Y[i] = X[i] - x;
+    }
+}
+
+void mul(int X[], int Y[], int Z[], int size)
+{
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        Z[i] = X[i].Y[i];
+    }
+}
+

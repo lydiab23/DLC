@@ -54,13 +54,15 @@ return i;
 }
 
 //a cleaning function that takes vect1 with extra elements and turn it into vector 2
-void clean(int vect1[], int vect2[], int i)
+int clean(int vect1[], int vect2[], int i)
 {
-
+  i=i-1;
   //////////////////////////**************//////////////////////////
   // change this which used to be a loop, you can use memory copy 'memcpy' to directly copy the content O(n) 
-  memcpy(vect2, vect1, sizeof(int) * i+1);
-  vect2[i]=2;
+  memcpy(vect2, vect1, sizeof(int) * i);
+  i=i+1;
+  vect2[i-1]=2;
+  return i;
 
 }
 //extended euclide algorithm
@@ -89,13 +91,13 @@ int CRT ( int S_xx[], int eq_x[], int size )
 int N=1,x,y,a_x=0;
 
 //N=product of all elements in S_x
-for(int i=0;i<size;i++)
+for(int i=0;i<size-1;i++)
 {
 printf("calculating(%d)- N=%d\n",i,N);
  N=N*S_xx[i];
 }
 //calculating a_x
-for(int i=0;i<size;i++)
+for(int i=0;i<size-1;i++)
 {
 printf("eq_x[%d]=%d\n",i,eq_x[i]);
 printf("N/S_xx[%d]=%d\n",i,N/S_xx[i]);
@@ -161,8 +163,15 @@ for(int i=0;i<k;i++){
   //cleaning up S_p and S_q
   int S_p2[nz_p], S_q2[nz_q];
   printf("testing the cleaning function\n");
-  clean(S_p, S_p2, nz_p);
-  clean(S_q, S_q2,nz_q);
+  int i;
+  nz_p=clean(S_p, S_p2, nz_p);
+  for(i=0;i<nz_p;i++){
+    printf("S_p[%d]=%d \n",i,S_p2[i]);
+  }
+  nz_q=clean(S_q, S_q2,nz_q);
+    for(i=0;i<nz_q;i++){
+    printf("S_q[%d]=%d \n",i,S_q2[i]);
+  }
   printf("the cleaning function passed the test\n");
   //collecting the equations of p and q
   int eq_p[nz_p], eq_q[nz_q];
@@ -170,11 +179,12 @@ for(int i=0;i<k;i++){
   for(int j=0;j<nz_p-1;j++)
    {
     eq_p[j]=2*(nz_p -j)%S_p2[j];
-    printf("%d\n",eq_p[j]);
+    printf("eq_p[%d]=%d\n",j,eq_p[j]);
    }
-  for(int j=0;j<nz_p-1;j++)
+  for(int j=0;j<nz_q-1;j++)
    {
     eq_q[j]=2*(nz_q -j)%S_q2[j];
+    printf("eq_q[%d]=%d\n",j,eq_q[j]);
    }
   printf("we passed the equations\n");
   int a_p, a_q;

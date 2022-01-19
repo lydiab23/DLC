@@ -84,6 +84,27 @@ int extended_gcd(int a, int b, int *x, int *y)
     return *x;
 }
 
+int create_vector_for_crt(int vect[],int size)
+{
+  //on supprime les élements qui se répetent dans la liste
+  int i,j,k;
+    for(i=0;i<size;i++){
+        for(j=i+1;j<size;j++){
+            if(vect[i]==vect[j]){
+                for ( k = j; k < size - 1; k++)  
+                {  
+                    vect[k] = vect[k + 1];  
+                }  
+                size--;  
+            // if the position of the elements is changed, don't increase the index j  
+                j--;      
+            }
+        }
+    }
+
+  return size;
+}
+
 //CRT
 int CRT ( int S_xx[], int eq_x[], int size )
 {
@@ -100,11 +121,14 @@ printf("calculating(%d)- N=%d\n",i,N);
 for(int i=0;i<size-1;i++)
 {
 printf("eq_x[%d]=%d\n",i,eq_x[i]);
-printf("N/S_xx[%d]=%d\n",i,N/S_xx[i]);
-printf("extended_gc(%d,%d,x,y)=%d\n",eq_x[i],(N/S_xx[i]),extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
+int l;
+l=N/S_xx[i];
+printf("l=%d \n",l);
+printf("N=%d divisé par S_xx[%d]=%d donne l=%d \n ",N,i,S_xx[i],l);
+printf("extended_gc(%d,%d,x,y)=%d\n",(N/S_xx[i]),S_xx[i],extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
 a_x=a_x+(eq_x[i]*(N/S_xx[i])*extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
 printf("testing the a_x\n");
-printf("%d\n",a_x);
+printf("a_x=%d\n",a_x);
 }
 return a_x;
 }
@@ -165,25 +189,30 @@ for(int i=0;i<k;i++){
   printf("testing the cleaning function\n");
   int i;
   nz_p=clean(S_p, S_p2, nz_p);
-  for(i=0;i<nz_p;i++){
-    printf("S_p[%d]=%d \n",i,S_p2[i]);
-  }
   nz_q=clean(S_q, S_q2,nz_q);
-    for(i=0;i<nz_q;i++){
-    printf("S_q[%d]=%d \n",i,S_q2[i]);
-  }
+
   printf("the cleaning function passed the test\n");
+
+  nz_p=create_vector_for_crt(S_p2,nz_p);
+  for(i=0;i<nz_p;i++){
+    printf("s_p2[%d] = %d \n",i,S_p2[i]);
+  }
+  nz_q=create_vector_for_crt(S_q2,nz_q);
+  for(i=0;i<nz_q;i++){
+    printf("s_q2[%d] = %d \n",i,S_q2[i]);
+  }
+
   //collecting the equations of p and q
   int eq_p[nz_p], eq_q[nz_q];
   printf("testing the equations\n");
   for(int j=0;j<nz_p-1;j++)
    {
-    eq_p[j]=2*(nz_p -j)%S_p2[j];
+    eq_p[j]=2*((nz_p-1) -j)%S_p2[j];
     printf("eq_p[%d]=%d\n",j,eq_p[j]);
    }
   for(int j=0;j<nz_q-1;j++)
    {
-    eq_q[j]=2*(nz_q -j)%S_q2[j];
+    eq_q[j]=2*((nz_q-1)-j)%S_q2[j];
     printf("eq_q[%d]=%d\n",j,eq_q[j]);
    }
   printf("we passed the equations\n");

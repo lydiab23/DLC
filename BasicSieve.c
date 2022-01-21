@@ -83,6 +83,7 @@ int main(int argc, char * argv[])
 
 	FILE* f;
 	FILE* g;
+	FILE* val_N;
 
 
 
@@ -138,6 +139,13 @@ int main(int argc, char * argv[])
 
 	mpz_mul(N,p,q);
 	gmp_printf("N = %Zd \n",N);
+	val_N=fopen("valeur_de_N=p.q.txt","a");
+	if(val_N==NULL){
+		printf("Erreur d'ouverture du fichier \n");
+	}
+	mpz_out_str(val_N, 10, N);
+	fclose(val_N);
+
 	long int endtime = cputime();
 	printf("temps d'execution : %ld milli-secondes \n", endtime - starttime);
 

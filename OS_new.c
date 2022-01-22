@@ -103,7 +103,7 @@ int main()
   gmp_randinit_default(generator); // Initializing the generator
   gmp_randseed_ui(generator, time(NULL)); // giving the generator a seed   
   //the results
-  f=fopen("traces_p","w+");
+  f=fopen("traces_p","a");
  // f=fopen("traces_p","w+");
 	if(f==NULL){
 		printf("Can't open  \n");
@@ -112,7 +112,7 @@ int main()
 	
 	fclose(f);
  	printf("testing q\n");
- 	g=fopen("traces_q","w+");
+ 	g=fopen("traces_q","a");
 	//g=fopen("traces_de_q.txt","w+");
 	if(g==NULL){
 		printf("can't open \n");

@@ -164,12 +164,12 @@ int attack(int primes[], int k, double vect[],int n)
         //printf("rho[%d]=%f\n",h,rho[h]);
      }
       //printf("problem in choose max\n");
-      //candidate[j]=ChooseMax(rho,primes[j]);
+      candidate[j]=ChooseMax(rho,primes[j]);
       
       }
 
    mpz_clears(bla,z_box,NULL);
-   //return  CRT(primes, candidate,k);
+   return  CRT(primes, candidate,k);
  }
 int main()
  {

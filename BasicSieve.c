@@ -61,6 +61,8 @@ int crible_simple(int b,int k, int t, mpz_t n, gmp_randstate_t mon_generateur, i
         	fputc('C',f);
 			if(mpz_probab_prime_p(n,t)==0){
 				mpz_add_ui(n,n,2);
+				fputc('B',f);
+				isPrime=0;
 			}
 			else{
 				isPrime=1;
@@ -93,7 +95,8 @@ int main(int argc, char * argv[])
 	b=512;
 	//non divisible par les k premiers nombres premiers
 	//on aura trois cas à étudier (T1, k = 54), (T2, k = 60), (T3, k = 70)
-	k=atoi(argv[1]);
+	//k=atoi(argv[1]);
+	k=54;
 	//avant d’etre testé par la méthode de Miller-Rabin avec t bases
 	t=10;
 	

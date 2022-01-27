@@ -122,11 +122,11 @@ int CRT ( int S_xx[], int eq_x[], int size )
     int l;
     l=N/S_xx[i];
     printf("l=%d \n",l);
-    printf("N=%d divisé par S_xx[%d]=%d donne l=%d \n ",N,i,S_xx[i],l);
-    printf("extended_gc(%d,%d,x,y)=%d\n",(N/S_xx[i]),S_xx[i],extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
+    //printf("N=%d divisé par S_xx[%d]=%d donne l=%d \n ",N,i,S_xx[i],l);
+    //printf("extended_gc(%d,%d,x,y)=%d\n",(N/S_xx[i]),S_xx[i],extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
     a_x=a_x+(eq_x[i]*(N/S_xx[i])*extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
-    printf("testing the a_x\n");
-    printf("a_x=%d\n",a_x);
+   // printf("testing the a_x\n");
+   // printf("a_x=%d\n",a_x);
   }
   if(a_x>N){
     a_x=a_x-N;

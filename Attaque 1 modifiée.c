@@ -53,6 +53,7 @@ int S_x(int primes_x[],int primes[], char vect[], int size)
 }
 
 //a cleaning function that takes vect1 with extra elements and turn it into vector 2
+//it also adds "2" at the end of the vector
 int clean(int vect1[], int vect2[], int i)
 {
   i=i-1;
@@ -64,25 +65,8 @@ int clean(int vect1[], int vect2[], int i)
   return i;
 
 }
-//extended euclide algorithm
-int extended_gcd(int a, int b, int *x, int *y)
-{
-    if (a == 0)
-    {
-        *x = 0;
-        *y = 1;
-        return b;
-    }
- 
-    int _x, _y;
-    int gcd = extended_gcd(b % a, a, &_x, &_y);
- 
-    *x = _y - (b/a) * _x;
-    *y = _x;
- 
-    return *x;
-}
 
+//a functing that deletes elements that are doubles in vect[]
 int create_vector_for_crt(int vect[],int size)
 {
   //on supprime les élements qui se répetent dans la liste
@@ -104,90 +88,73 @@ int create_vector_for_crt(int vect[],int size)
   return size;
 }
 
-//CRT
-int CRT ( int S_xx[], int eq_x[], int size )
+//Chinese residual theorem
+//The first CRT takes vector of int, the second CRT takes vectors of mpz_t
+void CRT (mpz_t a_x, int S_xx[], int eq_x[], int size )
 {
   //here size is the cardinal of S_x
-  int N=1,x,y,a_x=0;
+  mpz_t N,L,x,y,g,rop1,rop2;
+  mpz_inits(N,L,x,y,g,rop1,rop2,NULL);
+  mpz_set_ui(N,1);
 
   //N=product of all elements in S_x
   for(int i=0;i<size-1;i++)
   {
-    printf("calculating(%d)- N=%d\n",i,N);
-    N=N*S_xx[i];
+    gmp_printf("calculating(%d)- N=%Zd\n",i,N);
+    mpz_mul_ui(N,N,S_xx[i]);
   }
   //calculating a_x
+  //la boucle va jusqu'a size-1 car on a ajouté "2" à S_p et à S_q mais on n'a aucune congruence pour 2
   for(int i=0;i<size-1;i++)
   {
     printf("eq_x[%d]=%d\n",i,eq_x[i]);
-    int l;
-    l=N/S_xx[i];
-    printf("l=%d \n",l);
-    printf("N=%d divisé par S_xx[%d]=%d donne l=%d \n ",N,i,S_xx[i],l);
-    printf("extended_gc(%d,%d,x,y)=%d\n",(N/S_xx[i]),S_xx[i],extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
-    a_x=a_x+(eq_x[i]*(N/S_xx[i])*extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
+    mpz_cdiv_q_ui(L,N,S_xx[i]);
+    gmp_printf("N=%Zd divisé par S_xx[%d]=%d donne L=%Zd \n ",N,i,S_xx[i],L);
+    mpz_set_ui(rop1,S_xx[i]);
+    mpz_gcdext(g,x,y,L,rop1);
+    //on s'intéresse au x tel que L.x+y.S_xx[i]=g
+    gmp_printf("extended_gcd(%Zd,%d,x,y)=%Zd\n",L,S_xx[i],x);
+    mpz_mul(rop2,L,x);
+    mpz_mul_ui(rop2,rop2,eq_x[i]);
+    mpz_add(a_x,a_x,rop2);
+    mpz_mod(a_x,a_x,N);
+    //a_x=a_x+(eq_x[i]*(N/S_xx[i])*extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
     printf("testing the a_x\n");
-    printf("a_x=%d\n",a_x);
+    gmp_printf("a_x=%Zd\n",a_x);
   }
-  
-  mpz_t a_xx;
-  mpz_init(a_xx);
-  mpz_set_ui(a_xx,a_x);
-  mpz_mod_ui(a_xx,a_xx,N);
-  a_x=mpz_get_ui(a_xx);
-
-  return a_x;
-  
 }
 
-int CRT2 ( int S_xx[], int eq_x[], int size )
+void CRT2(mpz_t a_x, mpz_t S_xx[], mpz_t eq_x[], int size )
 {
   //here size is the cardinal of S_x
-  int N=1,x,y,a_x=0;
+  mpz_t N,L,x,y,g,rop1,rop2;
+  mpz_inits(N,L,x,y,g,rop1,rop2,NULL);
+  mpz_set_ui(N,1);
 
   //N=product of all elements in S_x
   for(int i=0;i<size;i++)
   {
-    N=N*S_xx[i];
-    printf("calculating(%d)- N=%d\n",i,N);
+    gmp_printf("calculating(%d)- N=%Zd\n",i,N);
+    mpz_mul(N,N,S_xx[i]);
   }
-
   //calculating a_x
   for(int i=0;i<size;i++)
   {
-    printf("eq_x[%d]=%d\n",i,eq_x[i]);
-    int l;
-    l=N/S_xx[i];
-    printf("l=%d \n",l);
-    printf("N=%d divisé par S_xx[%d]=%d donne l=%d \n ",N,i,S_xx[i],l);
-    printf("extended_gc(%d,%d,x,y)=%d\n",(N/S_xx[i]),S_xx[i],extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
-    a_x=a_x+(eq_x[i]*(N/S_xx[i])*extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
+    //printf("eq_x[%d]=%Zd \n",i,eq_x[i]);
+    mpz_cdiv_q(L,N,S_xx[i]);
+    gmp_printf("N=%Zd divisé par S_xx[%d]=%Zd donne L=%Zd \n ",N,i,S_xx[i],L);
+    mpz_gcdext(g,x,y,L,S_xx[i]);
+    gmp_printf("extended_gcd(%Zd,%Zd,x,y)=%Zd\n",L,S_xx[i],x);
+    mpz_mul(rop2,L,x);
+    mpz_mul(rop2,rop2,eq_x[i]);
+    mpz_add(a_x,a_x,rop2);
+    mpz_mod(a_x,a_x,N);
+    //a_x=a_x+(eq_x[i]*(N/S_xx[i])*extended_gcd(N/S_xx[i], S_xx[i], &x, &y));
     printf("testing the a_x\n");
-    printf("a_x=%d\n",a_x);
+    gmp_printf("a_x=%Zd\n",a_x);
   }
-  
-  mpz_t a_xx;
-  mpz_init(a_xx);
-  mpz_set_ui(a_xx,a_x);
-  mpz_mod_ui(a_xx,a_xx,N);
-  a_x=mpz_get_ui(a_xx);
-
-  return a_x;
-  
 }
 
-int gcd(int a, int b)
-{
-    if (a == 0)
-        return b;
-    return gcd(b % a, a);
-}
- 
-// Function to return LCM of two numbers
-int lcm(int a, int b)
-{
-    return (a / gcd(a, b)) * b;
-}
 
 //the main to work this programm
 int main()
@@ -222,11 +189,13 @@ int main()
   int size_p=file_size(f1), size_q=file_size(f2);
   char vect_p[size_p+1],vect_q[size_q+1];
   mpz_t N;
-  mpz_init(N);
+  mpz_inits(N,NULL);
 
+  //Lecture des courbes de consommations
   fscanf(f1,"%s",vect_p);
   fscanf(f2,"%s",vect_q);
 
+  //lecture de N a partir du fichier, pour rappel N=p.q et est une donnée publique à laquelle l'attaquant a accès
   mpz_inp_str(N,f3,10);
 
 
@@ -263,17 +232,22 @@ int main()
 
   printf("the cleaning function passed the test\n");
 
-  int NS_p=1,NS_q=1;
+  mpz_t NS_p,NS_q;
+  mpz_inits(NS_p,NS_q,NULL);
+  mpz_set_ui(NS_p,1);
+  mpz_set_ui(NS_q,1);
+
   nz_p=create_vector_for_crt(S_p2,nz_p);
   for(i=0;i<nz_p;i++){
     printf("s_p2[%d] = %d \n",i,S_p2[i]);
-    NS_p=NS_p*S_p2[i];
+    mpz_mul_ui(NS_p,NS_p,S_p2[i]);
   }
 
   nz_q=create_vector_for_crt(S_q2,nz_q);
   for(i=0;i<nz_q;i++){
     printf("s_q2[%d] = %d \n",i,S_q2[i]);
-    NS_q=NS_q*S_q2[i];
+    //NS_q=NS_q*S_q2[i];
+    mpz_mul_ui(NS_q,NS_q,S_q2[i]);
   }
 
   //collecting the equations of p and q
@@ -290,57 +264,59 @@ int main()
     printf("eq_q[%d]=%d\n",j,eq_q[j]);
   }
   printf("we passed the equations\n");
-  int a_p,b_q;
+  mpz_t a_p,b_q,a_q,b_p,c_p,c_q,lcm;
+  mpz_inits(a_p,b_q,a_q,b_p,c_p,c_q,lcm,NULL);
   printf("testing CRT\n");
-  a_p=CRT(S_p2, eq_p, nz_p);
-  b_q=CRT(S_q2, eq_q, nz_q);
-  printf("a_p=%d\nb_q=%d\n",a_p,b_q);
+  CRT(a_p,S_p2, eq_p, nz_p);
+  CRT(b_q,S_q2, eq_q, nz_q);
+  gmp_printf("a_p=%Zd\nb_q=%Zd\n",a_p,b_q);
   printf("\n");
+
 
   //calcul de a_q et b_p
   printf("Calcul de a_q et b_p\n");
-  mpz_t A_q,B_p,rop1,rop2;
-  mpz_inits(A_q,B_p,rop1,rop2,NULL);
-  //a_q=(a_p)^(-1).N mod NS_P
-  mpz_set_ui(A_q, a_p);
-  mpz_set_ui(rop1, NS_p);
-  mpz_invert(A_q, A_q, rop1);
-  mpz_mul(A_q,A_q,N);
-  mpz_mod(A_q,A_q,rop1);
-  gmp_printf("A_q=%Zd \n",A_q);
+  //a_q=N/a_p mod NS_P
+  mpz_cdiv_q(a_q,N,a_p);
+  mpz_mod(a_q,a_q,NS_p);
+  gmp_printf("a_q=%Zd \n",a_q);
   printf("\n");
-  //b_p=(b_q)^(-1).N mod NS_q
-  mpz_set_ui(B_p, b_q);
-  mpz_set_ui(rop2, NS_q);
-  mpz_invert(B_p, B_p, rop2);
-  mpz_mul(B_p,B_p,N);
-  mpz_mod(B_p,B_p,rop2);
-  gmp_printf("B_p=%Zd \n",B_p);
+  //b_p=N/b_q mod NS_q
+  mpz_cdiv_q(b_p,N,b_q);
+  mpz_mod(b_p,b_p,NS_q);
+  gmp_printf("b_p=%Zd \n",b_p);
   printf("\n");
-
-  int a_q,b_p,c_p,c_q;
-  a_q=mpz_get_ui(A_q);
-  b_p=mpz_get_ui(B_p);
 
   //maintenant on calcule c_p = p (mod s), c_q = q (mod s) with s := lcm(sp,sq)
   // Dans notre cas on a renommé s_p=NS_p et s_q=NS_q
-  int mod[1];
-  int val_p[2], val_q[2];
+  mpz_t mod[1];
+  mpz_t val_p[2], val_q[2];
+  mpz_inits(mod[0],NULL);
+  for(i=0;i<2;i++){
+    mpz_inits(val_p[i],val_q[i],NULL);
+  }
 
-  mod[1]=lcm(NS_p,NS_q);
-  printf("lcm de NS_p=%d et NS_q=%d est lcm=%d \n",NS_p,NS_q, mod[1]);
+  mpz_lcm(mod[0],NS_p,NS_q);
+  gmp_printf("lcm de NS_p=%Zd et NS_q=%Zd est lcm=%Zd \n",NS_p,NS_q, mod[0]);
 
-  val_p[0]=a_p;
-  val_p[1]=b_p;
+  mpz_set(val_p[0],a_p);
+  mpz_set(val_p[1],b_p);
   
-  val_q[0]=a_q;
-  val_q[1]=b_q; 
+  mpz_set(val_q[0],a_q);
+  mpz_set(val_q[1],b_q); 
 
-  c_p=CRT2(val_p,mod,2);
-  c_q=CRT2(val_q,mod,2);
+  for(i=0;i<2;i++){
+    gmp_printf("val_p[%d]=%Zd \n",i,val_p[i]);
+  }
 
-  printf("c_p=%d \n",c_p);
-  printf("c_q=%d \n",c_q);
+  for(i=0;i<2;i++){
+    gmp_printf("val_q[%d]=%Zd \n",i,val_q[i]);
+  }
+
+  CRT2(c_p,val_p,mod,2);
+  CRT2(c_q,val_q,mod,2);
+
+  gmp_printf("c_p=%Zd \n",c_p);
+  gmp_printf("c_q=%Zd \n",c_q);
 
   //On peut maintenant passer à l'algorithme LLL avec c_p et c_q
 }

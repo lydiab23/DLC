@@ -75,8 +75,8 @@ void CRT (mpz_t a_x, int S_xx[], int eq_x[], int size )
     mpz_mul_ui(rop2,rop2,eq_x[i]);
     mpz_add(a_x,a_x,rop2);
     mpz_mod(a_x,a_x,N);
-    printf("testing the a_x\n");
-    gmp_printf("a_x=%Zd\n",a_x);
+    //printf("testing the a_x\n");
+    //gmp_printf("a_x=%Zd\n",a_x);
   }
 }
 //calculating the coefficient of correlation
@@ -136,7 +136,7 @@ int ChooseMax(double vect[],int threshhold)
    }
   return index;
  }
-int attack(int primes[], int k, double vect[],int n, mpz_t z_x)
+void attack(int primes[], int k, double vect[],int n, mpz_t z_x)
  {
   double m[n];
   int candidate[k];
@@ -226,9 +226,11 @@ for(int i=0;i<k;i++){
 	}
 
 
-printf("test5\n");
-int p2=attack(primes, k, vect_q,n_p,z_p);
-printf("test6\n");
-int q2=attack(primes, k, vect_p,n_q,z_q);
+//printf("test5\n");
+attack(primes, k, vect_q,n_p,z_p);
+gmp_printf("p'=%Zd\n",z_p);
+//printf("test6\n");
+attack(primes, k, vect_p,n_q,z_q);
+gmp_printf("q'=%Zd\n",z_q);
   mpz_clears(p,q,z_p,z_q,NULL);
 }

@@ -199,10 +199,14 @@ int main()
   for(int i=0;i<size_p/2;i++)
    {
     fscanf(f1,"%le",&vect_p[i]);
-    fscanf(f2,"%le",&vect_q[i]);
+   
     //printf("vect_p[%d]=%d\n",i,vect_p[i]);//this is just for testing 
    }
    add_noise(vect_p, size_p/2);
+  for(int i=0;i<size_q/2;i++)
+   {
+     fscanf(f2,"%le",&vect_q[i]);
+   }
    add_noise(vect_q,size_q/2);
 
 

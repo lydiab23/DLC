@@ -118,7 +118,7 @@ int main()
 	if(f==NULL){
 		printf("Can't open  \n");
 	}
-	printf("cntr=%d\n",optimized_sieve(n,k,generator,primes,b, t,f));
+	printf("%d\n",optimized_sieve(n,k,generator,primes,b, t,f));
 	
 	fclose(f);
  	//printf("testing q\n");
